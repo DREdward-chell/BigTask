@@ -5,15 +5,19 @@ import os
 
 
 SCREEN_SIZE = (500, 500)
+PG_UP = 16777235
+PG_DOWN = 16777237
 
 
 class Application(QtWidgets.QWidget):
-    def __init__(self):
+    spn = 0.002
+
+    def __init__(self) -> None:
         super().__init__()
-        self.getImage()
+        self.getImage(spn=self.spn)
         self.initUI()
 
-    def getImage(self, spn: float = 0.002):
+    def getImage(self, spn: float = 0.002) -> None:
         params = {
             "ll": "37.530887,55.703118",
             "l": "map",
@@ -32,7 +36,7 @@ class Application(QtWidgets.QWidget):
         with open(self.map_file, "wb") as file:
             file.write(response.content)
 
-    def initUI(self):
+    def initUI(self) -> None:
         global SCREEN_SIZE
         self.setGeometry(100, 100, *SCREEN_SIZE)
         self.setWindowTitle('Отображение карты')
@@ -44,9 +48,22 @@ class Application(QtWidgets.QWidget):
         self.image.resize(*SCREEN_SIZE)
         self.image.setPixmap(self.pixmap)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
         """При закрытии формы подчищаем за собой"""
         os.remove(self.map_file)
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        global PG_UP, PG_DOWN
+        match event.key():
+            case 16777235:
+                self.spn += 0.001
+                print('y')
+            case 16777237:
+                self.spn -= 0.001 if self.spn > 0 else 0
+            case _:
+                pass
+        self.pixmap.load(self.map_file)
+        self.image.setPixmap(self.pixmap)
 
 
 def main():
