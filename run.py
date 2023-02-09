@@ -62,6 +62,7 @@ class Application(QtWidgets.QWidget):
                 self.spn -= 0.001 if self.spn > 0 else 0
             case _:
                 pass
+        self.getImage(spn=self.spn)
         self.pixmap.load(self.map_file)
         self.image.setPixmap(self.pixmap)
 
